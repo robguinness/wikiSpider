@@ -61,9 +61,10 @@ NEWSPIDER_MODULE = 'wiki_spider.spiders'
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'wiki_spider.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'wiki_spider.pipelines.WikiSpiderPipeline': 300,
+    'wiki_spider.pipelines.MySQLStorePipeline': 500
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
