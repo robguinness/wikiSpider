@@ -41,7 +41,6 @@ class MySQLStorePipeline(object):
     return cls(dbpool)
 
   def process_item(self, item, spider):    
-    spider.logger.debug("!!!!!!!!!!!! TEST!!!!!!!!!!")
     # run db query in the thread pool
     d = self.dbpool.runInteraction(self._do_upsert, item, spider)
     d.addErrback(self._handle_error, item, spider)
@@ -56,7 +55,6 @@ class MySQLStorePipeline(object):
     """Perform an insert or update."""
     #guid = self._get_guid(item)
     #now = datetime.utcnow().replace(microsecond=0).isoformat(' ')
-    spider.logger.debug("!!!!!!!!!!!! INSERT TEST!!!!!!!!!!")
     conn.execute("""
         INSERT INTO wiki_titles (title, url, referrer)
         VALUES (%s, %s, %s)""",
@@ -68,7 +66,7 @@ class MySQLStorePipeline(object):
   def _handle_error(self, failure, item, spider):
     """Handle occurred on db interaction."""
     # do nothing, just log
-    self.logger.error(failure)
+    spider.logger.error(failure)
   
   #def _get_guid(self, item):
   #  """Generates an unique identifier for a given item."""

@@ -1,5 +1,6 @@
 from scrapy.spiders	import Spider
 from scrapy 	        import Selector
+#from scrapy.utils.response import get_base_url
 from wiki_spider.items	import WikipediaItem
 from scrapy.http	import Request
 from time               import sleep
@@ -40,15 +41,26 @@ class WikiSpider(Spider):
             #print coordinates
             #sleep(5)
             titles     = hxs.xpath('//h1[@class="firstHeading"]/text()').extract()
+            #base_url = get_base_url(response)
+            #print "Bas: ", base_url
 
             for title in titles:
                 self.count += 1
                 item = WikipediaItem()
                 item["title"] = title
-                item["referrer"] = response.request.headers.get('Referer', None)
+                
+                # get the referrer without the common url part
+                referrer = response.request.headers.get('Referer', None)
+                if referrer:
+                   item["referrer"] = referrer.split('/wiki/')[1]
+                   print referrer
+                else: 
+                  item["referrer"] = referrer
                 print self.count, title, "<--", item["referrer"]
-                item["url"] = response.url
+
+                # get the url without the common url part
+                item["url"] = response.url.split('/wiki/')[1]
                 yield item
-                del response
+                #del response
         else:
             print "--- NOT A PLACE -> ", response.url
