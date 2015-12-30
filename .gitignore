@@ -55,3 +55,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Crawl persistence data
+wiki_spider/wiki_spider/crawls/
