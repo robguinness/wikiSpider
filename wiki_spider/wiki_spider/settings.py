@@ -84,3 +84,9 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR='httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+# Settings for MySQL db connection
+MYSQL_HOST = 'localhost'
+MYSQL_DBNAME = 'wiki'
+MYSQL_USER = 'spider'
+MYSQL_PASSWD = 'wikiSpider4!'
