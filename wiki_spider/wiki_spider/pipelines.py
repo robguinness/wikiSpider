@@ -15,9 +15,8 @@ import MySQLdb
 import hashlib
 from scrapy.exceptions import DropItem
 from scrapy.http import Request
-from scrapy import log
 from twisted.enterprise import adbapi
-
+import logging
 
 class MySQLStorePipeline(object):
   """A pipeline to store the item in a MySQL database.
@@ -63,12 +62,12 @@ class MySQLStorePipeline(object):
         (item['title'].encode('utf-8'),
         item['url'].encode('utf-8'),
         item['referrer'].encode('utf-8')))
-    spider.log("Item stored in db: %r" % (item))
+    self.logger.info("Item stored in db: %r" % (item))
   
   def _handle_error(self, failure, item, spider):
     """Handle occurred on db interaction."""
     # do nothing, just log
-    log.err(failure)
+    self.logger.error(failure)
   
   #def _get_guid(self, item):
   #  """Generates an unique identifier for a given item."""
