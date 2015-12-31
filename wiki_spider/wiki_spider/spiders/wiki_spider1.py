@@ -53,7 +53,7 @@ class WikiSpider(Spider):
                 referrer = response.request.headers.get('Referer', None)
                 if referrer:
                    item["referrer"] = referrer.split('/wiki/')[1]
-                   print referrer
+                   #print referrer
                 else: 
                   item["referrer"] = referrer
                 print self.count, title, "<--", item["referrer"]
@@ -63,4 +63,5 @@ class WikiSpider(Spider):
                 yield item
                 #del response
         else:
-            print "--- NOT A PLACE -> ", response.url
+            self.logger.debug('--- NOT A PLACE -> ' + response.url)
+
