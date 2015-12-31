@@ -65,8 +65,8 @@ class MySQLStorePipeline(object):
   
   def _handle_error(self, failure, item, spider):
     """Handle occurred on db interaction."""
-    if failure.getErrorMessage().contains(1062):
-      spider.logger.error("!! DUPLICATE: " + failure.getErrorMessage())
+    if "1062" in failure.getErrorMessage():
+      spider.logger.info("!! DUPLICATE: " + failure.getErrorMessage())
     else:
       # do nothing, just log
       spider.logger.error(failure)
