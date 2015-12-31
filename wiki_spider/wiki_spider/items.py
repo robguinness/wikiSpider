@@ -13,3 +13,5 @@ class WikipediaItem(Item):
     title = Field()
     referrer = Field()
     url = Field()
+    latitude = Field()
+    longitude = Field()
