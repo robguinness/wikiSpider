@@ -14,33 +14,64 @@ class WikiSpider(Spider):
     degree_sign= u'\N{DEGREE SIGN}'
     minute_sign= u'\N{PRIME}'
     second_sign= u'\N{DOUBLE PRIME}'
+    numInQueue = 0
+    threshold = 2000 
+    maxThreshold = 5000
+
+    def aSillyBlockingMethod(self,link):
+        print "in blocking"
+        sleep(0.1)
+        yield Request(urlparse.urljoin("https://en.wikipedia.org/",link), self.parse)
+        print link
+
+    #We stored already crawled links in this list
+    crawledLinks     = []
+
+    #Pattern to check proper link
+    linkPattern     = re.compile("^\/wiki")
+
+    #Pattern to check "diff" link.
+    diffPattern     = "&diff="
+
+    #Pattern to check for "special page" link
+    specialPagePattern = re.compile("^\/wiki\/User_talk:|\/wiki\/File:|\/wiki\/Special:|\/wiki\/Talk:")
 
     def parse(self, response):
+        #self.simpleFunc(2)
+        #print "in parse"
         hxs        = Selector(response)
 
         links            = hxs.xpath("//a/@href").extract()
 
-        #We stored already crawled links in this list
-        crawledLinks     = []
-
-        #Pattern to check proper link
-        linkPattern     = re.compile("^\/wiki")
-        
-        #Pattern to check "diff" link.
-        diffPattern     = "&diff="
-
-        #Pattern to check for "special page" link
-        specialPagePattern = re.compile("^\/wiki\/User_talk:|\/wiki\/File:|\/wiki\/Special:|\/wiki\/Talk:")      
- 
-        for link in links:
-            # If it is a proper link and is not checked yet, yield it to the Spider
-            if linkPattern.match(link) and not specialPagePattern.match(link) \
-                and not (diffPattern in link) and not link in crawledLinks:
-                crawledLinks.append(link)
-                yield Request(urlparse.urljoin("https://en.wikipedia.org/",link), self.parse)
-        
+        # Get number of links in queue
+        self.numInQueue = self.crawler.engine.slot.scheduler.__len__()
+        #print "Number in queue: ", self.numInQueue
+        #print "Number of requests pending: ", len(self.crawler.engine.slot.inprogress)
+        #sleep(1)
+        #self.simpleFunc(links)
         geography = hxs.xpath('//table[@class="infobox geography vcard"]')
+
+        if self.numInQueue < self.threshold or geography:
+          #print "In if statement..."
+          #print "Number in queue: ", self.numInQueue
+          #print geography
+          #sleep(1)
+          #while self.numInQueue > self.maxThreshold:
+          for link in links:
+            # If it is a proper link and is not checked yet, yield it to the Spider
+            if self.linkPattern.match(link) and not self.specialPagePattern.match(link) \
+              and not (self.diffPattern in link) and not link in self.crawledLinks:
+                self.crawledLinks.append(link)
+                if self.numInQueue < self.maxThreshold:
+                  #print "yielding right away..."
+                  self.crawledLinks.append(link)
+                  yield Request(urlparse.urljoin("https://en.wikipedia.org/",link), self.parse)
+                else:
+                  break
+                  	
+        #print geography
         if geography:
+            #sleep(1)
             #print coordinates
             #sleep(5)
             titles     = hxs.xpath('//h1[@class="firstHeading"]/text()').extract()
@@ -94,12 +125,16 @@ class WikiSpider(Spider):
             latitude = latDegree + latMinute/60 + latSecond/3600
             #print latDegree, latMinute, latSecond, latSign
           else:
-            latSign = latMinuteSplit[1]
+            latSign = latSecond
             latitude = latDegree + latMinute/60
             #print latDegree, latMinute, latSign
         else:
-            latSign = latSplit[1]
+            latSign = latMinute
+            latitude = latDegree
             #print latDegree, latSign
+        if latSign=='S':
+          latitude = -latitude
+
     
       # Parse longitude
       if self.degree_sign in longitude[0]:
@@ -126,8 +161,6 @@ class WikiSpider(Spider):
           longSign = longMinute
           longitude = longDegree
           #print longDegree, longSign
-        if latSign=='S':
-          latitude = -latitude    
         if longSign=='W':
           longitude = -longitude  
       return [latitude, longitude] 

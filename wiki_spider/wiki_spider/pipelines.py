@@ -65,12 +65,12 @@ class MySQLStorePipeline(object):
         item['referrer'].encode('utf-8'),
         item['latitude'],item['longitude']))
 
-    spider.logger.info("Item stored in db: %r" % (item['title']))
+    spider.logger.debug("Item stored in db: %r" % (item['title']))
   
   def _handle_error(self, failure, item, spider):
     """Handle occurred on db interaction."""
     if "1062" in failure.getErrorMessage():
-      spider.logger.info("!! DUPLICATE: " + failure.getErrorMessage())
+      spider.logger.debug("!! DUPLICATE: " + failure.getErrorMessage())
     else:
       # do nothing, just log
       spider.logger.error(failure)
