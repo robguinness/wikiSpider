@@ -46,10 +46,10 @@ class WikiSpider(Spider):
             titles     = hxs.xpath('//h1[@class="firstHeading"]/text()').extract()
             latitude = hxs.xpath('//span[@id="coordinates"]//span[@class="latitude"]/text()').extract()
             longitude = hxs.xpath('//span[@id="coordinates"]//span[@class="longitude"]/text()').extract()
-            print latitude, longitude
+            #print latitude, longitude
             if latitude and longitude:
               coordinates = self.parseCoordinates(latitude, longitude)
-              print coordinates
+              #print coordinates
             else:
               coordinates = [None, None]
             for title in titles:
@@ -92,14 +92,14 @@ class WikiSpider(Spider):
             latSecond = float(latSecondSplit[0])
             latSign = latSecondSplit[1]
             latitude = latDegree + latMinute/60 + latSecond/3600
-            print latDegree, latMinute, latSecond, latSign
+            #print latDegree, latMinute, latSecond, latSign
           else:
             latSign = latMinuteSplit[1]
             latitude = latDegree + latMinute/60
-            print latDegree, latMinute, latSign
+            #print latDegree, latMinute, latSign
         else:
             latSign = latSplit[1]
-            print latDegree, latSign
+            #print latDegree, latSign
     
       # Parse longitude
       if self.degree_sign in longitude[0]:
@@ -116,16 +116,16 @@ class WikiSpider(Spider):
             longSecondSplit = longSecond.split(self.second_sign)
             longSecond = float(longSecondSplit[0])
             longSign = longSecondSplit[1]
-            print longDegree, longMinute, longSecond, longSign
+            #print longDegree, longMinute, longSecond, longSign
             longitude = longDegree + longMinute/60 + longSecond/3600
           else:
             longSign = longSecond
             longitude = longDegree + longMinute/60
-            print longDegree, longMinute, longSign
+            #print longDegree, longMinute, longSign
         else:
           longSign = longMinute
           longitude = longDegree
-          print longDegree, longSign
+          #print longDegree, longSign
         if latSign=='S':
           latitude = -latitude    
         if longSign=='W':
