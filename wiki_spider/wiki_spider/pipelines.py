@@ -41,6 +41,7 @@ class MySQLStorePipeline(object):
     return cls(dbpool)
 
   def process_item(self, item, spider):    
+    #print type(item['latitude'])
     # run db query in the thread pool
     d = self.dbpool.runInteraction(self._do_upsert, item, spider)
     d.addErrback(self._handle_error, item, spider)
@@ -55,13 +56,16 @@ class MySQLStorePipeline(object):
     """Perform an insert or update."""
     #guid = self._get_guid(item)
     #now = datetime.utcnow().replace(microsecond=0).isoformat(' ')
+    #latitude = "%.9f" % item['latitude']
     conn.execute("""
-        INSERT INTO wiki_titles (title, url, referrer)
-        VALUES (%s, %s, %s)""",
+        INSERT INTO wiki_titles (title, url, referrer, latitude, longitude)
+        VALUES (%s, %s, %s, %s, %s)""",
         (item['title'].encode('utf-8'),
         item['url'].encode('utf-8'),
-        item['referrer'].encode('utf-8')))
-    spider.logger.info("Item stored in db: %r" % (item))
+        item['referrer'].encode('utf-8'),
+        item['latitude'],item['longitude']))
+
+    spider.logger.info("Item stored in db: %r" % (item['title']))
   
   def _handle_error(self, failure, item, spider):
     """Handle occurred on db interaction."""
